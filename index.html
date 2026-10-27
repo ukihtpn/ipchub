@@ -35,20 +35,86 @@
   *{box-sizing:border-box;}
   html,body{min-height:100%;max-width:100%;overflow-x:hidden;}
   /* fixed background layer (cheaper on mobile than background-attachment:fixed) */
-  body::before{
-    content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
-    background-color:#04101F;
-    background-image:
-      radial-gradient(ellipse 120% 55% at 50% -6%, rgba(23,104,200,.55) 0%, rgba(6,22,48,0) 62%),
-      radial-gradient(ellipse 90% 45% at 50% 108%, rgba(18,88,175,.42) 0%, rgba(6,22,48,0) 65%),
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='104' viewBox='0 0 120 104'%3E%3Cpath d='M30 2 L60 19 L60 53 L30 70 L0 53 L0 19 Z M90 2 L120 19 L120 53 L90 70 L60 53 L60 19 Z M60 53 L90 70 L90 104 L60 121 L30 104 L30 70 Z' fill='none' stroke='%231E7FD8' stroke-width='1.1' stroke-opacity='0.30'/%3E%3C/svg%3E");;
-    background-repeat:no-repeat,no-repeat,repeat;
-    background-position:center top,center bottom,center top;
+  /* ===================== IPC Hub futuristic background =====================
+     Decorative only: fixed, behind everything, never intercepts input.      */
+  .bgfx{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;}
+  .bgfx > *{position:absolute;pointer-events:none;}
+
+  /* base: midnight navy -> deep navy, with the central electric-blue core */
+  .fx-base{
+    inset:0;
+    background:
+      radial-gradient(ellipse 85% 48% at 50% 38%, rgba(0,123,255,.30) 0%, rgba(2,8,23,0) 68%),
+      radial-gradient(ellipse 120% 40% at 50% -8%,  rgba(0,123,255,.26) 0%, rgba(2,8,23,0) 70%),
+      linear-gradient(175deg,#061B3A 0%,#041226 46%,#020817 100%);
+    animation:coreBreathe 9s ease-in-out infinite;
+  }
+  @keyframes coreBreathe{
+    0%,100%{opacity:.92;}
+    50%    {opacity:1;}
+  }
+
+  /* hexagonal molecular mesh, left and right edges only */
+  .fx-hex{top:0;bottom:0;width:34%;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='104' viewBox='0 0 120 104'%3E%3Cpath d='M30 2 L60 19 L60 53 L30 70 L0 53 L0 19 Z M90 2 L120 19 L120 53 L90 70 L60 53 L60 19 Z M60 53 L90 70 L90 104 L60 121 L30 104 L30 70 Z' fill='none' stroke='%2300D9FF' stroke-width='1.1' stroke-opacity='0.55'/%3E%3C/svg%3E");background-repeat:repeat;opacity:.5;}
+  .fx-hex.l{left:0;  -webkit-mask-image:linear-gradient(90deg,#000 0%,rgba(0,0,0,.55) 48%,transparent 100%);
+                             mask-image:linear-gradient(90deg,#000 0%,rgba(0,0,0,.55) 48%,transparent 100%);}
+  .fx-hex.r{right:0; -webkit-mask-image:linear-gradient(270deg,#000 0%,rgba(0,0,0,.55) 48%,transparent 100%);
+                             mask-image:linear-gradient(270deg,#000 0%,rgba(0,0,0,.55) 48%,transparent 100%);}
+
+  /* thin cyan neon streaks down each flank */
+  .fx-streak{width:1px;top:-10%;height:120%;
+    background:linear-gradient(180deg,rgba(0,217,255,0),rgba(0,217,255,.55),rgba(0,217,255,0));}
+  .fx-streak.s1{left:13%;}
+  .fx-streak.s2{left:24%;opacity:.5;}
+  .fx-streak.s3{right:13%;}
+  .fx-streak.s4{right:24%;opacity:.5;}
+
+  /* metallic gold diagonal ribbons in all four corners */
+  .fx-corner{width:230px;height:230px;overflow:hidden;}
+  .fx-corner i{
+    position:absolute;display:block;height:8px;width:380px;left:-150px;top:-46px;
+    transform:rotate(45deg);transform-origin:center;
+    background:linear-gradient(90deg,rgba(255,198,41,0) 0%,#A9790F 16%,#FFD966 50%,#FFC629 74%,rgba(255,198,41,0) 100%);
+    opacity:.85;
+  }
+  .fx-corner i:nth-child(2){top:-10px;height:5px;opacity:.55;}
+  .fx-corner i:nth-child(3){top:18px;height:3px;opacity:.35;}
+  .fx-tl{top:0;left:0;}
+  .fx-tr{top:0;right:0;transform:scaleX(-1);}
+  .fx-bl{bottom:0;left:0;transform:scaleY(-1);}
+  .fx-br{bottom:0;right:0;transform:scale(-1,-1);}
+
+  /* holographic platform: concentric rings near the bottom */
+  .fx-ring{
+    left:50%;bottom:4%;transform:translateX(-50%);
+    border-radius:50%;border:1px solid rgba(0,217,255,.26);
+  }
+  .fx-ring.r1{width:min(92vw,980px);height:150px;}
+  .fx-ring.r2{width:min(70vw,740px);height:112px;border-color:rgba(0,123,255,.34);bottom:6%;}
+  .fx-ring.r3{width:min(48vw,500px);height:76px; border-color:rgba(0,217,255,.40);bottom:8%;
+              box-shadow:0 0 38px -8px rgba(0,123,255,.55);}
+  .fx-glowfloor{
+    left:50%;bottom:0;transform:translateX(-50%);
+    width:min(96vw,1100px);height:230px;
+    background:radial-gradient(ellipse 50% 50% at 50% 100%, rgba(0,123,255,.34) 0%, rgba(2,8,23,0) 72%);
+  }
+
+  /* drifting light particles */
+  .fx-dot{width:3px;height:3px;border-radius:50%;background:#7FE4FF;
+    box-shadow:0 0 7px rgba(0,217,255,.9);opacity:.75;
+    animation:drift 14s ease-in-out infinite;}
+  .fx-dot.gold{background:#FFD966;box-shadow:0 0 7px rgba(255,198,41,.9);}
+  @keyframes drift{
+    0%,100%{transform:translate3d(0,0,0);opacity:.35;}
+    50%    {transform:translate3d(0,-26px,0);opacity:.95;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .fx-base,.fx-dot{animation:none;}
   }
 
   body{
     margin:0;
-    background:#04101F;
+    background:#020817;
     font-family:'Inter',sans-serif;
     color:var(--text);
     -webkit-font-smoothing:antialiased;
@@ -330,9 +396,60 @@
       font-size:13.5px;line-height:1.25;
     }
   }
+
+  /* background dialled back on small screens so it never fights the cards */
+  @media (max-width: 760px){
+    .fx-corner{width:140px;height:140px;}
+    .fx-corner i{width:240px;left:-98px;top:-30px;height:6px;opacity:.6;}
+    .fx-corner i:nth-child(2){top:-4px;height:4px;opacity:.38;}
+    .fx-corner i:nth-child(3){top:16px;height:2px;opacity:.24;}
+    .fx-hex{width:40%;opacity:.34;}
+    .fx-streak.s2,.fx-streak.s4{display:none;}
+    .fx-streak.s1{left:7%;}
+    .fx-streak.s3{right:7%;}
+  }
 </style>
 </head>
 <body>
+<div class="bgfx" aria-hidden="true">
+    <div class="fx-base"></div>
+    <div class="fx-hex l"></div>
+    <div class="fx-hex r"></div>
+    <div class="fx-streak s1"></div>
+    <div class="fx-streak s2"></div>
+    <div class="fx-streak s3"></div>
+    <div class="fx-streak s4"></div>
+    <div class="fx-corner fx-tl"><i></i><i></i><i></i></div>
+    <div class="fx-corner fx-tr"><i></i><i></i><i></i></div>
+    <div class="fx-corner fx-bl"><i></i><i></i><i></i></div>
+    <div class="fx-corner fx-br"><i></i><i></i><i></i></div>
+    <div class="fx-glowfloor"></div>
+    <div class="fx-ring r1"></div>
+    <div class="fx-ring r2"></div>
+    <div class="fx-ring r3"></div>
+    <span class="fx-dot gold" style="top:60.7%;left:72.5%;animation-delay:9.5s;animation-duration:19.4s;"></span>
+    <span class="fx-dot" style="top:71.3%;left:89.6%;animation-delay:0.3s;animation-duration:14.7s;"></span>
+    <span class="fx-dot" style="top:89.8%;left:63.7%;animation-delay:10.8s;animation-duration:11.1s;"></span>
+    <span class="fx-dot" style="top:46.7%;left:25.4%;animation-delay:6.5s;animation-duration:15.7s;"></span>
+    <span class="fx-dot" style="top:5.2%;left:22.6%;animation-delay:3.4s;animation-duration:19.2s;"></span>
+    <span class="fx-dot gold" style="top:73.7%;left:17.2%;animation-delay:9.6s;animation-duration:11.4s;"></span>
+    <span class="fx-dot" style="top:60.2%;left:14.0%;animation-delay:0.0s;animation-duration:18.7s;"></span>
+    <span class="fx-dot" style="top:23.1%;left:22.5%;animation-delay:11.8s;animation-duration:18.7s;"></span>
+    <span class="fx-dot" style="top:30.3%;left:93.3%;animation-delay:6.5s;animation-duration:16.8s;"></span>
+    <span class="fx-dot" style="top:22.6%;left:91.4%;animation-delay:8.3s;animation-duration:19.7s;"></span>
+    <span class="fx-dot gold" style="top:85.3%;left:30.4%;animation-delay:4.3s;animation-duration:11.7s;"></span>
+    <span class="fx-dot" style="top:17.3%;left:8.2%;animation-delay:3.6s;animation-duration:16.0s;"></span>
+    <span class="fx-dot" style="top:4.3%;left:66.4%;animation-delay:4.1s;animation-duration:13.1s;"></span>
+    <span class="fx-dot" style="top:78.5%;left:47.7%;animation-delay:3.8s;animation-duration:14.8s;"></span>
+    <span class="fx-dot" style="top:68.1%;left:7.4%;animation-delay:11.7s;animation-duration:10.2s;"></span>
+    <span class="fx-dot gold" style="top:72.2%;left:82.3%;animation-delay:0.2s;animation-duration:17.9s;"></span>
+    <span class="fx-dot" style="top:37.3%;left:57.0%;animation-delay:0.1s;animation-duration:10.5s;"></span>
+    <span class="fx-dot" style="top:20.5%;left:92.7%;animation-delay:2.4s;animation-duration:17.6s;"></span>
+    <span class="fx-dot" style="top:88.6%;left:91.5%;animation-delay:4.1s;animation-duration:13.5s;"></span>
+    <span class="fx-dot" style="top:51.7%;left:75.7%;animation-delay:1.3s;animation-duration:17.5s;"></span>
+    <span class="fx-dot gold" style="top:76.5%;left:83.7%;animation-delay:0.4s;animation-duration:19.5s;"></span>
+    <span class="fx-dot" style="top:12.3%;left:34.4%;animation-delay:7.3s;animation-duration:19.2s;"></span>
+  </div>
 <div class="stars page-stars">
   <span class="s gold" style="top:69.0%;left:63.5%;width:12.8px;height:12.8px;animation-delay:1.73s;animation-duration:12.55s"></span>
   <span class="s" style="top:51.2%;left:50.5%;width:10.4px;height:10.4px;animation-delay:0.03s;animation-duration:9.6s"></span>
@@ -445,7 +562,7 @@
 <div class="t-icon logo"><img src="data:image/png;base64,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" alt="CRE Tracker Pro logo"></div>
         <span class="t-name">CRE Tracker Pro</span>
       </a>
-      <a class="tile" target="_blank" rel="noopener" href="https://mdro-alert-manager.vercel.app/">
+      <a class="tile" target="_blank" rel="noopener" href="https://mdroalertmanager.vercel.app/">
 <div class="t-icon logo"><img src="data:image/png;base64,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" alt="MDRO Tracker Pro logo"></div>
         <span class="t-name">MDRO Tracker Pro</span>
       </a>
